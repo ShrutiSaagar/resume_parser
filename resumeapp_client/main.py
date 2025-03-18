@@ -178,9 +178,6 @@ def list_all_users(baseurl):
             print(f"  Full name: {user[3]} {user[2]}")
             print(f"  Email: {user[1]}")
             print(f"  Skills: {user[5]}")
-            print()
-            print(f"  4: {user[4]}")
-            print(f"  6: {user[6]}")
             print("-" * 20)
 
     except Exception as e:
