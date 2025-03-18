@@ -428,27 +428,16 @@ def download_resume(baseurl):
         url = baseurl + api
 
         res = web_service_call(url)
-
-        # let's look at what we got back:
-        if res.status_code == 200: # success
-            pass
-        elif res.status_code == 404:
-            print(f"No resume found for user with ID '{userid}'")
-            return
-        else:
-            # failed:
-            print("Failed with status code:", res.status_code)
-            print("url: " + url)
-            if res.status_code == 500:
-                # we'll have an error message
-                body = res.json()
-                print("Error message:", body)
-            return
+        # print('res file')
+        # print(res.json())
+        # res = res.json()
+        # print(res['resume_file'])
+        # print(res['file_content'])
 
         # if we get here, success! deserialize response:
         response_data = res.json()
         filename = response_data.get("filename", f"resume_user_{userid}.pdf")
-        datastr = response_data.get("data")
+        datastr = response_data.get("file_content")
         
         if not datastr:
             print("Error: No resume data in response")
