@@ -5,6 +5,22 @@ import pymysql
 from urllib.parse import unquote, unquote_plus
 from pypdf import PdfReader
 from io import BytesIO
+import os
+
+from configparser import ConfigParser
+
+config_file = 'resumeapp-config.ini'
+os.environ['AWS_SHARED_CREDENTIALS_FILE'] = config_file
+
+configur = ConfigParser()
+configur.read(config_file)
+
+rds_endpoint = configur.get('rds', 'endpoint')
+rds_portnum = int(configur.get('rds', 'port_number'))
+rds_username = configur.get('rds', 'user_name')
+rds_pwd = configur.get('rds', 'user_pwd')
+rds_dbname = configur.get('rds', 'db_name')
+
 
 def get_s3_file(bucket_name, file_key):
     s3 = boto3.client('s3')
@@ -75,20 +91,20 @@ def process_with_bedrock(resume_text):
     print(resume_data)
     return resume_data
 
-def save_to_mysql(user_id, fname, lname, email, skills, resume_text):
+def save_to_mysql(user_id, fname, lname, email, skills, resume_text, resume_file):
     connection = pymysql.connect(
-        host='cs310db1.ch800ukeqnsq.us-east-2.rds.amazonaws.com',
-        user='resume-read-write',
-        password='def456!!',
-        database='resume',
+        host=rds_endpoint,
+        user=rds_username,
+        password=rds_pwd,
+        database=rds_dbname
     )
     with connection.cursor() as cursor:
         sql = """
-        INSERT INTO users (userid, firstname, lastname, email, skills, resume_text)
-        VALUES (%s, %s, %s, %s, %s, %s)
+        INSERT INTO users (userid, firstname, lastname, email, skills, resume_text, resume_file)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
         ON DUPLICATE KEY UPDATE skills=%s, resume_text=%s;
         """
-        cursor.execute(sql, (user_id, fname, lname, email, skills, resume_text, skills, resume_text))
+        cursor.execute(sql, (user_id, fname, lname, email, skills, resume_text, resume_file, skills, resume_text))
     connection.commit()
     connection.close()
 
@@ -129,7 +145,7 @@ def lambda_handler(event, context):
     random_uuid = uuid.uuid4()
     user_id = str(random_uuid)
     print('user_id', user_id, ' firstname ', firstname, ' lastname ', lastname, ' email ', email, ' skills ', skills)
-    save_to_mysql(user_id, firstname, lastname, email, skills, resume_text)
+    save_to_mysql(user_id, firstname, lastname, email, skills, resume_text, resume_file_key)
 
     return {
         'statusCode': 200,
