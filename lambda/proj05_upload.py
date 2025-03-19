@@ -28,13 +28,6 @@ def lambda_handler(event, context):
         s3 = boto3.resource('s3')
         bucket = s3.Bucket(bucketname)
         
-        # Configure for RDS access
-        rds_endpoint = configur.get('rds', 'endpoint')
-        rds_portnum = int(configur.get('rds', 'port_number'))
-        rds_username = configur.get('rds', 'user_name')
-        rds_pwd = configur.get('rds', 'user_pwd')
-        rds_dbname = configur.get('rds', 'db_name')
-
         # Extract userid from event
         print("**Accessing event/pathParameters**")
         
@@ -57,25 +50,6 @@ def lambda_handler(event, context):
         print("filename:", filename)
         print("datastr (first 10 chars):", datastr[0:10])
 
-        # Open database connection
-        # print("**Opening connection**")
-        
-        # dbConn = datatier.get_dbConn(rds_endpoint, rds_portnum, rds_username, rds_pwd, rds_dbname)
-        
-        # # Fetch user details
-        # print("**Fetching user details from DB**")
-        # sql = "SELECT firstname, lastname FROM users WHERE userid = %s;"
-        # row = datatier.retrieve_one_row(dbConn, sql, [userid])
-        
-        # if row == ():
-        #     print("**No such user, returning...**")
-        #     return {
-        #         'statusCode': 400,
-        #         'body': json.dumps("no such user...")
-        #     }
-        
-        # firstname, lastname = row
-        
         # Prepare the file for upload
         base64_bytes = datastr.encode()
         file_bytes = base64.b64decode(base64_bytes)
@@ -97,11 +71,6 @@ def lambda_handler(event, context):
             'ContentType': 'application/pdf'
         }
     )
-        
-        # Update the database
-        # print("**Updating user resume file in DB**")
-        # sql = "UPDATE users SET resume_file = %s WHERE userid = %s;"
-        # datatier.perform_action(dbConn, sql, [bucketkey, userid])
         
         print("**DONE, returning success**")
         
