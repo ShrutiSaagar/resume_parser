@@ -44,19 +44,10 @@ def lambda_handler(event, context):
     else:
         raise Exception("requires skill_name parameter in event")
         
-    print("skill_name:", skill_name)
-
-
-    #
-    # open connection to the database:
-    #
     print("**Opening connection**")
     
     dbConn = datatier.get_dbConn(rds_endpoint, rds_portnum, rds_username, rds_pwd, rds_dbname)
     
-    #
-    # now retrieve all the users:
-    #
     print("**Retrieving data**")
 
     #
@@ -67,10 +58,6 @@ def lambda_handler(event, context):
     for row in rows:
       print(row)
 
-    #
-    # respond in an HTTP-like way, i.e. with a status
-    # code and body in JSON format:
-    #
     print("**DONE, returning rows**")
     
     return {

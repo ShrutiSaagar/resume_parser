@@ -68,10 +68,6 @@ def lambda_handler(event, context):
     for row in rows:
       print(row)
 
-    #
-    # respond in an HTTP-like way, i.e. with a status
-    # code and body in JSON format:
-    #
     print("**DONE, returning rows**")
     
     return {

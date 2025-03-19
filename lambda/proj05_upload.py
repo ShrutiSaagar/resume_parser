@@ -38,18 +38,6 @@ def lambda_handler(event, context):
         # Extract userid from event
         print("**Accessing event/pathParameters**")
         
-        # if "userid" in event:
-        #     userid = event["userid"]
-        # elif "pathParameters" in event:
-        #     if "userid" in event["pathParameters"]:
-        #         userid = event["pathParameters"]["userid"]
-        #     else:
-        #         raise Exception("requires userid parameter in pathParameters")
-        # else:
-        #     raise Exception("requires userid parameter in event")
-
-        # print("userid:", userid)
-        
         # Extract file data from request body
         print("**Accessing request body**")
         
